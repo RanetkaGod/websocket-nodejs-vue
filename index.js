@@ -13,7 +13,7 @@ const wss = new WebSocket.Server({server})
 const cors = require('cors')
 const MongoDBStore = require('connect-mongodb-session')(session)
 let store = new MongoDBStore({
-    uri: 'mongodb://heroku_1g72mc5f:g6lhkeltlmcjmtsudr3dsk26ue@ds213178.mlab.com:13178/heroku_1g72mc5f',
+    uri: 'mongodb://admin:admin1@ds213178.mlab.com:13178/heroku_1g72mc5f',
     collection: 'sessions'
 })
 store.on('error', function (error) {
@@ -21,7 +21,7 @@ store.on('error', function (error) {
 })
 
 function startMongoDbConnection() {
-    MongoClient.connect('mongodb://heroku_1g72mc5f:g6lhkeltlmcjmtsudr3dsk26ue@ds213178.mlab.com:13178/heroku_1g72mc5f', {
+    MongoClient.connect('mongodb://admin:admin1@ds213178.mlab.com:13178/heroku_1g72mc5f', {
         useNewUrlParser: true,
         useUnifiedTopology: true
     }, function (err, client) {
