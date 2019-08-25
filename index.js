@@ -1,4 +1,4 @@
-const port = 3000
+const port = process.env.PORT || 8080
 const express = require('express')
 const WebSocket = require('ws')
 const app = express()
