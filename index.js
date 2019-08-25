@@ -98,9 +98,9 @@ function startHTTPServer(db) {
     app.use(session(sess))
     app.post('/auth', (req, res) => {
         console.log(req.body)
+        db.collection('users').find({}).toArray(function(err, res){console.log(err, res)})
         db.collection('users').find({'username': req.body.username, 'password': req.body.password})
             .count(function (err, count) {
-                console.log(count)
                 if (count) {
                     req.session.authorized = true
                     req.session.username = req.body.username
