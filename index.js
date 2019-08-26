@@ -97,7 +97,7 @@ function startHTTPServer(db) {
     }
     app.use(cors({
         credentials: true,
-        origin: ["http://vue-test-websocket.herokuapp.com", "https://vue-test-websocket.herokuapp.com", "localhost:8080"]
+        origin: ["http://vue-test-websocket.herokuapp.com", "https://vue-test-websocket.herokuapp.com", "http://localhost:8080"]
     }))
     app.use(express.json())
     app.use(session(sess))
