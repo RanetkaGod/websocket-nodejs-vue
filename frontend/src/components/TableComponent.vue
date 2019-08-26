@@ -33,7 +33,7 @@
                 </template>
 
                 <template v-if="$store.state.role === 1">
-                    <transition name="add-button" mode="out-in">
+                    <transition name="add-button" mode="out-in" tag="div">
                         <span v-if="!adding_row" key="newrow" class="new-row"><button class="button new-row"
                                                                                       @click="adding_row=true">+</button></span>
                         <span key="form" v-else class="new-form">
@@ -105,8 +105,7 @@
             },
             saveRow: async function () {
                 try {
-                    setTimeout(
-                        await HTTP.post('/new', this.new_row), 200)
+                        await HTTP.post('/new', this.new_row)
                 } catch (e) {
                     alert('Произошла ошибка')
                 }
@@ -277,5 +276,5 @@
         //transform: translateY(0)
 
     .add-button-enter-active, .add-button-leave-active
-        transition: $transition02
+        transition: all .1s ease
 </style>
