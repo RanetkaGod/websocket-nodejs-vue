@@ -83,6 +83,9 @@
 
                 .input
                     border: 1px solid lightgray
+                    transition: all .2s ease-in-out
+                    &:focus
+                        border-color: $main-blue
 
                 .button
                     background: #92adff

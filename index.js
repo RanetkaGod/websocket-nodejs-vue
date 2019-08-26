@@ -7,11 +7,16 @@ const server = http.createServer(app)
 const expressWs = require('express-ws')(app)
 const MongoClient = require('mongodb').MongoClient
 const session = require('express-session')
-let ObjectID = require('mongodb').ObjectID
-let uuid4 = require('uuid4')
+const ObjectID = require('mongodb').ObjectID
+const uuid4 = require('uuid4')
 const wss = new WebSocket.Server({server})
 const cors = require('cors')
 const MongoDBStore = require('connect-mongodb-session')(session)
+const path = require('path')
+const serveStatic = require('serve-static')
+const history = require('connect-history-api-fallback')
+
+
 let store = new MongoDBStore({
     uri: 'mongodb://admin:admin1@ds213178.mlab.com:13178/heroku_1g72mc5f',
     collection: 'sessions'
@@ -96,6 +101,8 @@ function startHTTPServer(db) {
     }))
     app.use(express.json())
     app.use(session(sess))
+    app.use(history())
+    app.use(serveStatic('frontend/dist'))
     app.post('/auth', (req, res) => {
         console.log(req.body)
         db.collection('users').find({}).toArray(function(err, res){console.log(err, res)})
