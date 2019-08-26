@@ -13,7 +13,7 @@
 </template>
 
 <script>
-    import { HTTP } from '../srv-defaults'
+    import {HTTP} from '../srv-defaults'
 
     export default {
         name: "AuthorizationComponent",
@@ -83,7 +83,8 @@
 
                 .input
                     border: 1px solid lightgray
-                    transition: all .2s ease-in-out
+                    transition: $transition02
+
                     &:focus
                         border-color: $main-blue
 
@@ -93,7 +94,7 @@
                     color: white
                     outline: none
                     border: none
-                    transition: all .2s ease-in-out
+                    transition: $transition02
 
                     &:hover
                         background: #839deb

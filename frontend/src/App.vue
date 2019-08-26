@@ -13,6 +13,7 @@
 </script>
 
 <style lang="sass">
+    @import "variables"
     body, html
         padding: 0
         margin: 0
@@ -44,5 +45,5 @@
             opacity: 1
 
         .main-leave-active, .main-enter-active
-            transition: all .2s ease-in-out
+            transition: $transition02
 </style>

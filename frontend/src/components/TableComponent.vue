@@ -25,14 +25,17 @@
                             </option>
                         </select>
                         <transition name="delete-button" appear>
-                            <button v-if="delete_menu_displayed" class="button delete" @click="deleteRow(elements._id)">X</button>
+                            <button v-if="delete_menu_displayed" class="button delete" @click="deleteRow(elements._id)">
+                                X
+                            </button>
                         </transition>
                     </div>
                 </template>
 
                 <template v-if="$store.state.role === 1">
                     <transition name="add-button" mode="out-in">
-                        <span v-if="!adding_row" key="newrow" class="new-row"><button class="button new-row" @click="adding_row=true">+</button></span>
+                        <span v-if="!adding_row" key="newrow" class="new-row"><button class="button new-row"
+                                                                                      @click="adding_row=true">+</button></span>
                         <span key="form" v-else class="new-form">
                             <input v-model="new_row.info" type="text" class="cell input"
                                    placeholder="Название проекта"/>
@@ -53,7 +56,8 @@
 
 <script>
     import NavMenu from "./NavMenu"
-    import { HTTP } from '../srv-defaults'
+    import {HTTP} from '../srv-defaults'
+
     export default {
         name: "TableComponent",
         components: {NavMenu},
@@ -77,9 +81,7 @@
                 console.log(response)
                 let token = response.data.token
                 this.$connect(`wss://vue-test-websocket.herokuapp.com/?token=${token}`, {reconnection: true})
-                console.log('connected to websocket')
                 this.$options.sockets.onmessage = (data) => {
-                    console.log('got message from ws:'+ data)
                     let self = this
                     this.socketData = JSON.parse(data.data)
                     this.socketData.forEach(function (obj, key) {
@@ -110,15 +112,15 @@
                 this.clearFields()
 
             },
-            clearFields: function(){
+            clearFields: function () {
                 this.adding_row = !this.adding_row
                 this.new_row.info = undefined
                 this.new_row.state = 'Connected'
             },
-            deleteRow: async function(id){
+            deleteRow: async function (id) {
                 try {
                     await HTTP.delete(`/delete?id=${id}`)
-                }catch (e) {
+                } catch (e) {
                     alert('Невозможно удалить')
                 }
             }
@@ -149,14 +151,17 @@
             .new-row
                 width: 100%
                 grid-column: 1/3
+
             .table
                 overflow-y: auto
                 padding: 0 60px
+
             .table, .new-form
                 display: grid
                 grid-gap: 10px
                 grid-template-columns: minmax(130px, 300px) minmax(130px, 300px)
-                transition: all .2s ease-in-out
+                transition: $transition02
+
                 .select-wrapper
                     position: relative
 
@@ -165,7 +170,7 @@
                     background: white
                     border: 1px solid
                     height: 50px
-                    transition: all .2s ease-in-out
+                    transition: $transition02
 
                 .button.new-row
 
@@ -178,22 +183,22 @@
                         color: white
 
                 .button.save
-                    border-color: #00d735
-                    color: #00d735
+                    border-color: $main-green
+                    color: $main-green
                     font-weight: bold
                     margin-bottom: 10px
 
                     &:hover
-                        background: #00d735
+                        background: $main-green
                         color: white
 
                 .button.cancel
-                    border-color: #d72e01
-                    color: #d72e01
+                    border-color: $main-red
+                    color: $main-red
                     font-weight: bold
 
                     &:hover
-                        background: #d72e01
+                        background: $main-red
                         color: white
 
                 .button.delete
@@ -201,15 +206,14 @@
                     z-index: 1
                     width: 40px
                     height: 40px
-                    //border-radius: 50%
                     top: 0
                     right: -50px
-                    border-color: #d72e01
-                    color: #d72e01
+                    border-color: $main-red
+                    color: $main-red
                     font-weight: bold
 
                     &:hover
-                        background: #d72e01
+                        background: $main-red
                         color: white
 
                 .cell
@@ -231,8 +235,9 @@
                             border: none
                             right: 15px
                             top: 6px
-                            fill: #d72e01
-                            transition: all .2s ease-in-out
+                            fill: $main-red
+                            transition: $transition02
+
                             &:hover
                                 fill: $main-blue
 
@@ -260,7 +265,7 @@
         opacity: 1
 
     .delete-button-enter-active, .delete-button-leave-active
-        transition: all .2s ease-in-out
+        transition: $transition02
 
     .add-button-enter, .add-button-leave-to
         opacity: 0
@@ -271,5 +276,5 @@
         transform: translateY(0)
 
     .add-button-enter-active, .add-button-leave-active
-        transition: all .1s ease-in-out
+        transition: $transition02
 </style>

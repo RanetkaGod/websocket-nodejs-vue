@@ -1,9 +1,10 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from "axios"
+
 Vue.prototype.$axios = axios
 
-import { HTTP } from './srv-defaults'
+import {HTTP} from './srv-defaults'
 
 Vue.use(Vuex)
 const store = new Vuex.Store({
@@ -16,9 +17,7 @@ const store = new Vuex.Store({
             if (payload) {
                 state.authorized = true
                 state.role = payload
-            }
-            else
-            {
+            } else {
                 state.authorized = false
                 state.role = undefined
             }
@@ -29,8 +28,7 @@ const store = new Vuex.Store({
             try {
                 let response = await HTTP('/session')
                 commit('authorize', response.data.role)
-            }
-            catch (e) {
+            } catch (e) {
                 console.log(e)
                 commit('authorize')
             }

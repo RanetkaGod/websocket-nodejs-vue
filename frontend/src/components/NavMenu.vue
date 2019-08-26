@@ -7,7 +7,8 @@
 </template>
 
 <script>
-    import { HTTP } from '../srv-defaults'
+    import {HTTP} from '../srv-defaults'
+
     export default {
         name: "NavMenu",
         methods: {
@@ -15,8 +16,7 @@
                 try {
                     await HTTP.delete('/logout')
                     this.$router.push('/auth')
-                }
-                catch (e) {
+                } catch (e) {
                     console.error('Ошибка выхода ', e)
                 }
 
@@ -31,10 +31,12 @@
         width: 100%
         height: 60px
         background: $main-blue
+
         .nav
             height: 100%
             display: flex
             justify-content: flex-end
+
             .nav-item
                 height: 100%
                 background: $main-blue
@@ -43,7 +45,8 @@
                 width: 100px
                 color: white
                 font-weight: bold
-                transition: all .2s ease-in-out
+                transition: $transition02
+
                 &:hover
                     background: $main-blue-hover
 </style>
