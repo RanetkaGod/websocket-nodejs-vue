@@ -2,7 +2,7 @@
     <div class="content-wrapper">
         <nav-menu></nav-menu>
         <div class="table-wrapper">
-            <div class="table" :class="{'menu-open': this.delete_menu_displayed}">
+            <div class="table">
                 <span class="cell cell--title">Информация</span>
                 <span class="cell cell--title">
                     Состояние
@@ -155,11 +155,8 @@
                 display: grid
                 grid-gap: 10px
                 grid-template-columns: minmax(130px, 300px) minmax(130px, 300px)
-                padding: 0
+                padding: 0 60px
                 transition: all .2s ease-in-out
-                &.menu-open
-                    padding: 0 60px
-
                 .select-wrapper
                     position: relative
 
