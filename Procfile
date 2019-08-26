@@ -1,2 +1,1 @@
-build: cd frontend && npm i && npm run build && cd ..
-web: node index.js
+web: cd frontend && npm i && npm run build && cd .. && node index.js
