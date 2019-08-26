@@ -73,7 +73,7 @@
         },
         mounted: async function () {
             try {
-                const response = HTTP.get('/ticket')
+                const response = await HTTP.get('/ticket')
                 console.log(response)
                 let token = response.data.token
                 this.$connect(`ws://vue-test-websocket.herokuapp.com/?token=${token}`, {reconnection: true})
