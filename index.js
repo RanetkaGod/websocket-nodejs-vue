@@ -44,7 +44,7 @@ function startWebSocketServer(db) {
         if (token_docs) {
             let username = token_docs.username
             let user_data = await db.collection('users').findOne({username: username})
-            ws.on('message', onWsMessage)
+            ws.on('message', (message) => onWsMessage(message, user_data.role))
         }
         db.collection('project-data').find({}).toArray((err, docs) => ws.send(JSON.stringify(docs)))
         ws.on('close', async () => {
@@ -52,7 +52,7 @@ function startWebSocketServer(db) {
         })
     })
 
-    async function onWsMessage(message) {
+    async function onWsMessage(message, role) {
         let msg = JSON.parse(message)
         if (role === 1) {
             try {
