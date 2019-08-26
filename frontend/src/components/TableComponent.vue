@@ -105,7 +105,8 @@
             },
             saveRow: async function () {
                 try {
-                    await HTTP.post('/new', this.new_row)
+                    setTimeout(
+                        await HTTP.post('/new', this.new_row), 200)
                 } catch (e) {
                     alert('Произошла ошибка')
                 }
