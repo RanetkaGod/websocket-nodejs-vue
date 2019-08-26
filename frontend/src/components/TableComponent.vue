@@ -34,9 +34,10 @@
 
                 <template v-if="$store.state.role === 1">
                     <transition name="add-button" mode="out-in" tag="div">
-                        <span v-if="!adding_row" key="newrow" class="new-row"><button class="button new-row"
-                                                                                      @click="adding_row=true">+</button></span>
-                        <span key="form" v-else class="new-form">
+                        <span v-if="!adding_row" key="newrow" class="new-row">
+                            <button class="button new-row" @click="adding_row=true">+</button>
+                        </span>
+                        <span v-else key="form" class="new-form">
                             <input v-model="new_row.info" type="text" class="cell input"
                                    placeholder="Название проекта"/>
                             <select v-model="new_row.state" class="cell select">
@@ -105,7 +106,7 @@
             },
             saveRow: async function () {
                 try {
-                        await HTTP.post('/new', this.new_row)
+                    await HTTP.post('/new', this.new_row)
                 } catch (e) {
                     alert('Произошла ошибка')
                 }
@@ -142,6 +143,7 @@
             position: relative
 
             .new-form
+                position: relative
                 width: 100%
                 grid-column: 1/3
 
@@ -149,6 +151,7 @@
                     grid-column: 1/3
 
             .new-row
+                position: relative
                 width: 100%
                 grid-column: 1/3
 
@@ -269,12 +272,13 @@
 
     .add-button-enter, .add-button-leave-to
         opacity: 0
-        //transform: translateY(-10px)
+    //transform: translateY(-10px)
 
     .add-button-enter-to, .add-button-leave
         opacity: 1
-        //transform: translateY(0)
+    //transform: translateY(0)
 
     .add-button-enter-active, .add-button-leave-active
         transition: all .1s ease
+
 </style>
