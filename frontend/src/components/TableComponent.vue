@@ -151,11 +151,11 @@
                 grid-column: 1/3
             .table
                 overflow-y: auto
+                padding: 0 60px
             .table, .new-form
                 display: grid
                 grid-gap: 10px
                 grid-template-columns: minmax(130px, 300px) minmax(130px, 300px)
-                padding: 0 60px
                 transition: all .2s ease-in-out
                 .select-wrapper
                     position: relative
