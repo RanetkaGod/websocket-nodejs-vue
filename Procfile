@@ -1,2 +1,2 @@
-release: npm i && npm run build
+release: npm i && cd frontend && npm run build
 web: node index.js
