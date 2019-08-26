@@ -97,7 +97,7 @@ function startHTTPServer(db) {
     }
     app.use(cors({
         credentials: true,
-        origin: "http://localhost:8080"
+        origin: "http://vue-websocket-frontend.herokuapp.com"
     }))
     app.use(express.json())
     app.use(session(sess))
@@ -105,7 +105,6 @@ function startHTTPServer(db) {
     app.use(serveStatic('frontend/dist'))
     app.post('/auth', (req, res) => {
         console.log(req.body)
-        db.collection('users').find({}).toArray(function(err, res){console.log(err, res)})
         db.collection('users').find({'username': req.body.username, 'password': req.body.password})
             .count(function (err, count) {
                 if (count) {
