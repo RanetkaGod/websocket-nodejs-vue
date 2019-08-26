@@ -41,7 +41,7 @@
                             </select>
                             <div class="button-group">
                                 <button key="save" class="button save" @click="saveRow">Сохранить</button>
-                                <button class="button cancel" @click="adding_row=false">Отменить</button>
+                                <button class="button cancel" @click="clearFields">Отменить</button>
                             </div>
                         </span>
                     </transition>
@@ -104,14 +104,16 @@
             saveRow: async function () {
                 try {
                     await HTTP.post('/new', this.new_row)
-                    this.new_row.info = undefined
-                    this.new_row.state = 'Connected'
-                    this.adding_row = !this.adding_row
                 } catch (e) {
-                    this.adding_row = !this.adding_row
                     alert('Произошла ошибка')
                 }
+                this.clearFields()
 
+            },
+            clearFields: function(){
+                this.adding_row = !this.adding_row
+                this.new_row.info = undefined
+                this.new_row.state = 'Connected'
             },
             deleteRow: async function(id){
                 try {
@@ -147,7 +149,8 @@
             .new-row
                 width: 100%
                 grid-column: 1/3
-
+            .table
+                overflow-y: auto
             .table, .new-form
                 display: grid
                 grid-gap: 10px

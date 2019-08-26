@@ -16,6 +16,7 @@
     body, html
         padding: 0
         margin: 0
+        width: 100%
 
         *
             box-sizing: border-box
@@ -35,10 +36,13 @@
             display: flex
             flex-direction: row
             justify-content: center
-    .main-enter, .main-leave-to
-        opacity: 0
-    .main-leave, .main-enter-to
-        opacity: 1
-    .main-leave-active, .main-enter-active
-        transition: all .2s ease-in-out
+
+        .main-enter, .main-leave-to
+            opacity: 0
+
+        .main-leave, .main-enter-to
+            opacity: 1
+
+        .main-leave-active, .main-enter-active
+            transition: all .2s ease-in-out
 </style>
