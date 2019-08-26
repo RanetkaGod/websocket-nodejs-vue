@@ -38,7 +38,7 @@
                             <button class="button new-row" @click="adding_row=true">+</button>
                         </span>
                         <span v-else key="form" class="new-form">
-                            <input v-model="new_row.info" type="text" class="cell input"
+                            <input v-if="adding_row" v-model="new_row.info" type="text" class="cell input"
                                    placeholder="Название проекта"/>
                             <select v-model="new_row.state" class="cell select">
                                 <option v-for="(state, key) in states" class="option" :key="key">{{state}}</option>
