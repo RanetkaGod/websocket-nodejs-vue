@@ -269,11 +269,11 @@
 
     .add-button-enter, .add-button-leave-to
         opacity: 0
-        transform: translateY(-10px)
+        //transform: translateY(-10px)
 
     .add-button-enter-to, .add-button-leave
         opacity: 1
-        transform: translateY(0)
+        //transform: translateY(0)
 
     .add-button-enter-active, .add-button-leave-active
         transition: $transition02
