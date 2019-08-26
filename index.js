@@ -4,7 +4,6 @@ const WebSocket = require('ws')
 const app = express()
 const http = require('http')
 const server = http.createServer(app)
-const expressWs = require('express-ws')(app)
 const MongoClient = require('mongodb').MongoClient
 const session = require('express-session')
 const ObjectID = require('mongodb').ObjectID
@@ -12,31 +11,29 @@ const uuid4 = require('uuid4')
 const wss = new WebSocket.Server({server})
 const cors = require('cors')
 const MongoDBStore = require('connect-mongodb-session')(session)
-const path = require('path')
 const serveStatic = require('serve-static')
 const history = require('connect-history-api-fallback')
 
-
-let store = new MongoDBStore({
+const store = new MongoDBStore({
     uri: 'mongodb://admin:admin1@ds213178.mlab.com:13178/heroku_1g72mc5f',
     collection: 'sessions'
 })
-store.on('error', function (error) {
-    console.log(error, ' storage error')
+store.on('error', (error) => {
+    console.error(error, ' storage error')
 })
 
-function startMongoDbConnection() {
-    MongoClient.connect('mongodb://admin:admin1@ds213178.mlab.com:13178/heroku_1g72mc5f', {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    }, function (err, client) {
-        console.log('connected successfully to mongo')
-        if (err) {
-            throw err
-        }
+async function startMongoDbConnection() {
+    try {
+        const client = await MongoClient.connect('mongodb://admin:admin1@ds213178.mlab.com:13178/heroku_1g72mc5f', {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        })
         startWebSocketServer(client.db('heroku_1g72mc5f'))
         startHTTPServer(client.db('heroku_1g72mc5f'))
-    })
+        console.info('connected successfully to mongo')
+    } catch (e) {
+        console.error(e, ' db connect error')
+    }
 }
 
 function startWebSocketServer(db) {
@@ -47,46 +44,35 @@ function startWebSocketServer(db) {
         if (token_docs) {
             let username = token_docs.username
             let user_data = await db.collection('users').findOne({username: username})
-            let role = user_data.role
-            ws.on('message', message => {
-                let msg = JSON.parse(message)
-                if (role === 1) {
-                    try {
-                        db.collection('project-data').updateOne(
-                            {_id: ObjectID(msg._id)},
-                            {$set: {state: msg.state}},
-                            function (err, result) {
-                                if (result) {
-                                    db.collection('project-data').find({}).toArray(function (err, docs) {
-                                        wss.clients.forEach(function each(client) {
-                                            if (client.readyState === 1) {
-                                                client.send(JSON.stringify(docs))
-                                            }
-                                        })
-                                    })
-                                }
-                            }
-                        )
-                    } catch (e) {
-                        console.log(e, ' error on update project data')
-                    }
-                }
-            })
+            ws.on('message', onWsMessage)
         }
-        db.collection('project-data').find({}).toArray(function (err, docs) {
-            ws.send(JSON.stringify(docs))
-        })
-
+        db.collection('project-data').find({}).toArray((err, docs) => ws.send(JSON.stringify(docs)))
         ws.on('close', async () => {
             await db.collection('user-tokens').findOneAndDelete({token: user_token})
         })
     })
 
-
+    async function onWsMessage(message) {
+        let msg = JSON.parse(message)
+        if (role === 1) {
+            try {
+                await db.collection('project-data').updateOne({_id: ObjectID(msg._id)}, {$set: {state: msg.state}})
+                db.collection('project-data').find({}).toArray((err, docs) => {
+                    wss.clients.forEach((client) => {
+                        if (client.readyState === 1) {
+                            client.send(JSON.stringify(docs))
+                        }
+                    })
+                })
+            } catch (e) {
+                console.error(e, ' error on update project data')
+            }
+        }
+    }
 }
 
 function startHTTPServer(db) {
-    let sess = {
+    const sess = {
         secret: 'caltaihenculus',
         resave: true,
         saveUninitialized: true,
@@ -104,9 +90,8 @@ function startHTTPServer(db) {
     app.use(history())
     app.use(serveStatic('frontend/dist'))
     app.post('/auth', (req, res) => {
-        console.log(req.body)
         db.collection('users').find({'username': req.body.username, 'password': req.body.password})
-            .count(function (err, count) {
+            .count((err, count) => {
                 if (count) {
                     req.session.authorized = true
                     req.session.username = req.body.username
@@ -116,6 +101,7 @@ function startHTTPServer(db) {
                 }
             })
     })
+
     app.get('/ticket', async (req, res) => {
         if (req.session.authorized) {
             const token = uuid4()
@@ -126,12 +112,14 @@ function startHTTPServer(db) {
                 })
                 res.send({token: token})
             } catch (e) {
-                console.log(e, ' ticket error')
+                console.error(e, ' ticket error')
                 res.sendStatus(500)
             }
-        } else
+        } else {
             res.sendStatus(401)
+        }
     })
+
     app.get('/session', async (req, res) => {
         let users
         try {
@@ -143,10 +131,11 @@ function startHTTPServer(db) {
                 res.sendStatus(401)
             }
         } catch (e) {
-            console.log(e, ' session error')
+            console.error(e, ' session error')
             res.sendStatus(500)
         }
     })
+
     app.delete('/logout', async (req, res) => {
         try {
             await db.collection('user-tokens').findOneAndDelete({username: req.session.username})
@@ -154,21 +143,20 @@ function startHTTPServer(db) {
             req.session.username = undefined
             res.sendStatus(200)
         } catch (e) {
-            console.log(e, ' logout error')
+            console.error(e, ' logout error')
         }
-
     })
+
     app.post('/new', async (req, res) => {
         let user_data = await db.collection('users').findOne({username: req.session.username})
         let role = user_data.role
         if (req.session.authorized && role === 1) {
             try {
                 let req_data = req.body
-                console.log(req_data)
                 await db.collection('project-data').insertOne({'project-info': req_data.info, 'state': req_data.state})
                 res.sendStatus(200)
-                db.collection('project-data').find({}).toArray(function (err, docs) {
-                    wss.clients.forEach(function each(client) {
+                db.collection('project-data').find({}).toArray((err, docs) => {
+                    wss.clients.forEach((client) => {
                         if (client.readyState === 1) {
                             client.send(JSON.stringify(docs))
                         }
@@ -177,39 +165,49 @@ function startHTTPServer(db) {
             } catch (e) {
                 res.sendStatus(500)
             }
-        } else
+        } else {
             res.sendStatus(500)
+        }
     })
-    app.delete('/delete', async (req, res) =>{
+
+    app.delete('/delete', async (req, res) => {
         let user_data = await db.collection('users').findOne({username: req.session.username})
         let role = user_data.role
         if (req.session.authorized && role === 1) {
             try {
                 await db.collection('project-data').deleteOne({'_id': ObjectID(req.query.id)})
                 res.sendStatus(200)
-                db.collection('project-data').find({}).toArray(function (err, docs) {
-                    wss.clients.forEach(function each(client) {
-                        if (client.readyState === 1) {
-                            client.send(JSON.stringify(docs))
-                        }
-                    })
+                let project_data = await db.collection('project-data').find({}).toArray()
+                wss.clients.forEach((client) => {
+                    if (client.readyState === 1) {
+                        client.send(JSON.stringify(project_data))
+                    }
                 })
-            }catch (e) {
-                console.log(e, 'Error deleting data')
+            } catch (e) {
+                console.error(e, ' error deleting data')
                 res.sendStatus(500)
             }
-
-        }
-        else
+        } else {
             res.sendStatus(500)
+        }
     })
-    server.listen(port, function (err) {
-        if (err)
-            console.log(err)
-        console.log(`Http server is listening on ${port}`)
+
+
+    server.listen(port, (err) => {
+        if (err) {
+            console.error(err)
+        }
+        console.info(`Http server is listening on ${port}`)
     })
 }
 
-startMongoDbConnection()
+startMongoDbConnection().then(
+    result => {
+        console.info(result, ' connected to db successfully')
+    },
+    error => {
+        console.error(error, ' error on connecting db')
+    }
+)
 
 
